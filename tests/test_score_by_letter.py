@@ -1,4 +1,4 @@
-from wordinfo.scoring import get_score_by_letter
+from wordinfo.suggesters.rank import get_score_by_letter
 
 
 def test_does_get_score_by_letter():

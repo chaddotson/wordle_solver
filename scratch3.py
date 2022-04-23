@@ -23,7 +23,8 @@ id = sha1(dumps(words).encode()).hexdigest()[0:8]
 
 print(id)
 
-from wordinfo.solver import calculate_entroy_by_word
+from wordinfo.suggesters.entropy import calculate_entroy_by_word
+
 entropy_by_word = calculate_entroy_by_word(words)
 with open('./test.json', 'w') as f:
     dump(entropy_by_word, f)

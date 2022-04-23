@@ -2,7 +2,11 @@ from time import time
 from logging import basicConfig, getLogger, INFO
 
 
-from wordinfo.solver import Solver, RankModifiedSuggester, DominanceSuggester, DominanceHardmodeSuggester, Wordle, EntropySuggester,DominanceEliminationSuggester, PopularEntropySuggester
+from wordinfo.solver import Solver, Wordle
+from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
+from wordinfo.suggesters.dominance import DominanceSuggester, DominanceEliminationSuggester, \
+    DominanceHardmodeSuggester
+from wordinfo.suggesters.rank import RankModifiedSuggester
 from wordinfo.utils import load_word_list, get_word_of_day, get_result_representation, WordSource
 
 

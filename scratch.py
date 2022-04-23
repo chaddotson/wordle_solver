@@ -1,9 +1,10 @@
 from statistics import mean
 from random import choice
 
-
-from wordinfo.scoring import get_score_by_letter, get_posititional_dominance, score_word, dominance_score_word
-from wordinfo.solver import RankModifiedSuggester, DominanceSuggester, DominanceModifiedSuggester, Solver, Wordle
+from wordinfo.solver import Solver, Wordle
+from wordinfo.suggesters.dominance import DominanceSuggester, DominanceModifiedSuggester, \
+    get_posititional_dominance, dominance_score_word
+from wordinfo.suggesters.rank import RankModifiedSuggester, get_score_by_letter, score_word
 from wordinfo.old_solver import SolverMethods, solve_wordle
 from wordinfo.utils import load_word_list, get_result_representation, WordSource
 
@@ -57,8 +58,8 @@ words = load_word_list(WordSource.WORDLE)
 
 
 from collections import Counter
-from wordinfo.solver import LetterTracker, generate_regex
-
+from wordinfo.solver import LetterTracker
+from wordinfo.suggesters.utils import generate_regex
 
 from enum import Enum
 

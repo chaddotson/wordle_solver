@@ -6,10 +6,12 @@ from time import time
 
 
 from wordinfo.solver import (
-    RankSuggester, RankModifiedSuggester, DominanceSuggester, DominanceHardmodeSuggester,
-    DominanceModifiedSuggester, DominanceModifiedAltSuggester, Solver, Wordle, EntropySuggester,
-    DominanceEliminationSuggester, PopularEntropySuggester
+    Solver, Wordle
 )
+from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
+from wordinfo.suggesters.dominance import DominanceSuggester, DominanceEliminationSuggester, \
+    DominanceHardmodeSuggester, DominanceModifiedSuggester, DominanceModifiedAltSuggester
+from wordinfo.suggesters.rank import RankSuggester, RankModifiedSuggester
 from wordinfo.old_solver import NewOne
 from wordinfo.utils import load_word_list, WordSource
 
