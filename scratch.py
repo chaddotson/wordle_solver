@@ -1,57 +1,310 @@
-from cgitb import text
+from statistics import mean
+from random import choice
+
+
+from wordinfo.scoring import get_score_by_letter, get_posititional_dominance, score_word, dominance_score_word
+from wordinfo.solver import RankModifiedSuggester, DominanceSuggester, DominanceModifiedSuggester, Solver, Wordle
+from wordinfo.old_solver import SolverMethods, solve_wordle
+from wordinfo.utils import load_word_list, get_result_representation, WordSource
+
+# 🟨🟨⬛🟨⬛
+# ⬛⬛🟨⬛⬛
+# 🟩🟩🟩🟩🟩
+
+
+words = load_word_list(WordSource.WORDLE)
+
+#
+#
+# solver = Solver()
+#
+# # found, tries, results = solver.solve(
+# #     suggester=RankModifiedSuggester(words),
+# #     fixed_suggestions=[],
+# #     word_tester=WordTester('could')
+# # )
+#
+# from time import time
+#
+# t1 = time()
+# results = []
+#
+# suggester = DominanceSuggester(words)
+# for i, target_word in enumerate(words):#range(runs):
+#     #arget_word = words[i]#choice(words)
+#     solved, tried_words, results_array = solver.solve(
+#         suggester=suggester,
+#         fixed_suggestions=[],
+#         wordle=Wordle(target_word)
+#     )
+#
+#     results.append(len(tried_words))
+#     # representation = get_result_representation(results_array)
+#
+#     # print(target_word)
+#     # print(representation)
+#
+# average_tries = mean(results)
+# success_percent = len([r for r in results if r <=6])/len(results)*100
+#
+#
+# print(f'Avg Tries: {average_tries:.2f}')
+# print(f'Success: {success_percent:.2f}%')
+#
+# total_time = time() - t1
+# print(f'Total Time: {total_time:.2f}s / {total_time / len(results):.6f}s ea')
+# exit()
+
+
 from collections import Counter
-from pprint import pprint
-import re
-from tkinter import scrolledtext
-from turtle import right
+from wordinfo.solver import LetterTracker, generate_regex
 
 
-def get_score_by_letter(words):
-    counter = Counter()
+from enum import Enum
 
-    for word in words:
-        counter.update(word)
+class LetterVerdict(Enum):
+    INVALID = 0
+    INCORRECT = 1
+    CORRECT = 2
 
-    min_count = min(counter.values())
-
-    score_by_letter = {}
-    for letter, count in counter.items():
-        score_by_letter[letter] = count/min_count
-
-    return score_by_letter
-
-
-def score_word(score_by_letter, word):
-    value = 0
-    for letter in word:
-        value += score_by_letter[letter]
-    return value
+WORDLE_SIZE = 5
+target_word = 'tares'
 
 
 
-
-regex = re.compile('[A-Z\d/\.&!\'\-()\x03\x07\x08]')
-
-with open('./wordinfo/data/wordle.txt', 'r') as f:
-    words = [l.strip('\n').lower() for l in f.readlines() if not regex.search(l) and len(l) == 6]
-
-
-
-
-
-
-
-
-score_by_letter = get_score_by_letter(words)
-print(score_by_letter)
+possible_outcomes_for_target = []
+for word in words:
+    outcome = [LetterVerdict.INVALID] * WORDLE_SIZE
+    for index, (l, r) in enumerate(zip(word, target_word)):
+        if l == r:
+            outcome[index] = LetterVerdict.CORRECT
+        elif l in target_word:
+            outcome[index] = LetterVerdict.INCORRECT
+    possible_outcomes_for_target.append(outcome)
+print(possible_outcomes_for_target)
 
 
+unique_results = {}
+for entry in possible_outcomes_for_target:
+    if not entry in unique_results:
+        unique_results = 0
+    unique_results[entry] += 1
+
+
+print(unique_results)
 
 
 
-# words = [word for word in words if not any(c > 1 for c in Counter(word).values())]
+# score_by_letter = get_score_by_letter(words)
+# word_score = {word: score_word(score_by_letter, set(word)) for word in words}
+# ranked = sorted([(word, score) for word, score in word_score.items()], key=lambda x: x[1], reverse=True)
+#
+# score_by_dominance = get_posititional_dominance(words)
+# dominance_word_score = {word: dominance_score_word(score_by_dominance, word) for word in words}
+# dominance_ranked = sorted([(word, score) for word, score in dominance_word_score.items()], key=lambda x: x[1], reverse=True)
+#
+#
+# print(ranked[0:10])
+# print(dominance_ranked[0:10])
+#
+# print(score_word(score_by_letter, 'roate'))
 
-word_score = {word: score_word(score_by_letter, word) for word in words}
+# def get_get_number_of_choices(word, wordlist, letter_tracker):
+#
+# letter_tracker = LetterTracker(5)
+# word = 'arose'
+# letter_tracker.invalids.update(word)
+# regex = generate_regex([word], letter_tracker)
+#
+# import re
+#
+# word_and_possible_candidates = []
+# for word in words:
+#     letter_tracker = LetterTracker(5)
+#     letter_tracker.invalids.update('arise')
+#     letter_tracker.invalids.update(word)
+#     regex = generate_regex(['arise', word], letter_tracker)
+#     candidate_words = [w for w in words if re.search(regex, w)]
+#     # print(word, len(candidate_words))
+#     word_and_possible_candidates.append((word, len(candidate_words)))
+#
+#
+#
+# word_and_possible_candidates = sorted(word_and_possible_candidates, key=lambda x: x[1])
+#
+#
+# test = ['slate', 'surly', 'spill', 'swill', 'skill']
+# for word in test:
+#     print(word, word_score[word], dominance_word_score[word])
+#
+
+# print(word_and_possible_candidates[:5])
+# print([c for c in word_and_possible_candidates if c[1] ==5 ][:20])
+#
+# from wordinfo.solver import RankSuggester, Solver
+#
+# suggester = RankSuggester(words)
+# solver = Solver()
+#
+# results = {}
+#
+# for word in words[:10]:
+#
+#     if word not in results:
+#         results[word] = []
+#
+#     for i, target_word in enumerate(words):
+#         if target_word == word:
+#             continue
+#
+#         suggester.reset()
+#         solved, tried_words, results_array = solver.solve(
+#             suggester=suggester,
+#             fixed_suggestions=[word],
+#             wordle=Wordle(target_word)
+#         )
+#         # print(len(tried_words))
+#         results[word].append(len(tried_words))
+#
+# candidates = [(word, min(attempts)) for word, attempts in results.items()]
+#
+# candidates = sorted(candidates, key=lambda x: x[1])
+# print(candidates)
+
+
+# dedup_words = [word for word in words if not any(c > 1 for c in Counter(word).values())]
+# dedup_word_score = {word: score_word(score_by_letter, word) for word in dedup_words}
+# dedup_ranked = sorted([(word, score) for word, score in dedup_word_score.items()], key=lambda x: x[1], reverse=True)
+#
+# word_score = {word: score_word(score_by_letter, word) for word in words}
+# ranked = sorted([(word, score) for word, score in word_score.items()], key=lambda x: x[1], reverse=True)
+#
+# positional_dominance = get_posititional_dominance(words)
+# dominance_word_score = {word: dominance_score_word(positional_dominance, word) for word in words}
+# dominance_ranked = sorted([(word, score) for word, score in dominance_word_score.items()], key=lambda x: x[1], reverse=True)
+#
+#
+#
+# trials = []
+#
+#
+#
+#
+# selected_word = choice(words)
+#
+# t1 = time()
+# runs = len(words)
+# results = []
+# for i, target_word in enumerate(words):#range(runs):
+#     #arget_word = words[i]#choice(words)
+#     solved, tried_words, results_array = solve_wordle(
+#         target_word=target_word,
+#         fixed_suggestions=[],#['arise', 'could'],
+#         method=SolverMethods.RANK_MODIFIED,
+#         ranked=ranked,
+#         deduped_ranked=dedup_ranked,
+#         dominance_ranked=dominance_ranked,
+#         modifier=5
+#     )
+#
+#     results.append(len(tried_words))
+#     # print(target_word, len(tried_words))
+#
+# average_tries = mean(results)
+# success_percent = len([r for r in results if r <=6 ])/runs*100
+#
+#
+# print(f'Avg Tries: {average_tries:.2f}')
+# print(f'Success: {success_percent:.2f}%')
+# print(time() - t1)
+#
+
+
+
+#
+#
+# attempt_words = []
+# attempt_results = [[0] * 5 for i in range(6)]
+#
+# at = [None] * 5
+# not_at = {}
+# invalids = set()
+#
+#
+# fixed_suggestions = [] #['arise', 'could']
+#
+# attempt = 0
+# solved = False
+# while attempt < 6 and not solved:
+#     if attempt < len(fixed_suggestions):
+#         suggestion = fixed_suggestions[attempt]
+#     else:
+#         regex = generate_regex(attempt_words, at, not_at, invalids)
+#         suggestion = generate_suggestion_by_dominance(dominance_ranked, regex)
+#     attempt_words.append(suggestion)
+#
+#     for index, (l, r) in enumerate(zip(suggestion, selected_word)):
+#         if l == r:
+#             # position found
+#             attempt_results[attempt][index] = 2
+#             at[index] = l
+#         elif l in selected_word:
+#             # letter found
+#             attempt_results[attempt][index] = 1
+#
+#             if index not in not_at:
+#                 not_at[index] = set()
+#                 not_at[index].add(l)
+#         else:
+#             invalids.add(l)
+#
+#     # because I want to be picky and have the data, I don't exit early and I let the above record the attempt
+#     if suggestion == selected_word:
+#         solved = True
+#
+#
+#     attempt += 1
+#
+#
+#     # attempt_words.append((suggestion, score))
+#
+# print('solved', solved, attempt+1)
+# print('selected_word', selected_word)
+# print(attempt_words)
+#
+#
+#
+# print('-', attempt_results)
+# print('at', at)
+# print('not_at', not_at)
+# print('invaliud', invalids)
+#
+# letters_regex = ''.join([f'{"".join(f"(?!{nat})" for nat in not_at.get(index, []))}[a-z]' if at[index] is None else at[index] for index in range(5)])
+# contains_regex = ''.join(f'(?=.*{letter})' for position_not_ats in not_at.values() for letter in position_not_ats)
+# invalids_regex = ''.join(f'(?!.*{invalid})' for invalid in invalids)
+# total_regex = f'^{invalids_regex}{contains_regex}(?:{letters_regex})$'
+#
+#
+#
+#
+# print('letters_regex', letters_regex)
+# print('contains_regex', contains_regex)
+# print('invalids_regex', invalids_regex)
+# print('total_regex', total_regex)
+#
+#
+#
+# word, score = next(pair for pair in ranked if re.search(total_regex ,pair[0]))
+#
+# # for pair in ranked:
+# #     print(pair[0], re.search(total_regex ,pair[0]))
+# #
+# print(word, score)
+
+
+#
+# print(word_score['doubt'], dominance_word_score['doubt'])
+# print(word_score['could'], dominance_word_score['could'])
 
 
 # max_word = ''
@@ -64,20 +317,57 @@ word_score = {word: score_word(score_by_letter, word) for word in words}
 
 
 
-ranked = sorted([(word, score) for word, score in word_score.items()], key=lambda x: x[1], reverse=True)
+
+
+
 
 
 # pprint(ranked[:200])
 
 
-
-for index, pair in enumerate(ranked):
-    print(f'{index+1:4} {pair[0]} {pair[1]:.3f}')
+#
+# for index, pair in enumerate(ranked[:50]):
+#     print(f'{index+1:4} {pair[0]} {pair[1]:.3f}')
+#
+#
+#
+# print('----')
+#
+# for index, pair in enumerate(dominance_ranked[:50]):
+#     print(f'{index+1:4} {pair[0]} {pair[1]:.3f}')
 
 # for index, pair in enumerate(ranked[-20:]):
 #     print(f'{index+1:4} {pair[0]} {int(pair[1])}')
 
-
+#
+#
+# at = []
+# not_at = {}
+# invalids = set()
+# for row in range(6):
+#     for col in range(5):
+#         val = cell_values[row][col].get()
+#         if val == '':
+#             continue
+#         if not val == '':
+#             max_row = row
+#         if cell_states[row][col] == 0:
+#             invalids.add(val)
+#         elif cell_states[row][col] == 1:
+#             if col not in not_at:
+#                 not_at[col] = set()
+#             not_at[col].add()
+#         else:
+#             data[val]['at'] = col
+#
+#
+# index = 0
+# for i in range(6):
+#     print(f'Try:', ranked[index])
+#     performance = input('How did it do (x=bad, !=used, $=right):')
+#
+#     print(performance)
+#
 
 # from itertools import groupby
 
@@ -96,13 +386,13 @@ for index, pair in enumerate(ranked):
 # temp = re.compile('^(?=.*w)(?=.*c)(?=.*i)(?:(?!c)[a-z][a-z](?!i)[a-z][a-z])e$')
 # temp = re.compile('^(?=.*o)(?!.*s)(?!.*b)(?!.*n)(?!.*k)(?!.*t)(?!.*u)(?!.*f)(?!.*a)(?!.*e)(?!.*g)(?!.*l)(?:cri[a-z]p)$')
 
-temp = re.compile('^(?=.*o)(?=.*l)(?=.*k)(?!.*a)(?!.*r)(?!.*i)(?!.*s)(?!.*e)(?!.*d)(?!.*u)(?!.*b)(?!.*t)(?:[a-z](?!l)[a-z]o[a-z](?!k)[a-z])$')
-
-
-print('----', len(words))
-for word in words:
-    if temp.search(word):
-        print(word, word_score[word])
+# temp = re.compile('^(?=.*o)(?=.*l)(?=.*k)(?!.*a)(?!.*r)(?!.*i)(?!.*s)(?!.*e)(?!.*d)(?!.*u)(?!.*b)(?!.*t)(?:[a-z](?!l)[a-z]o[a-z](?!k)[a-z])$')
+#
+#
+# print('----', len(words))
+# for word in words:
+#     if temp.search(word):
+#         print(word, word_score[word])
 
 
 
