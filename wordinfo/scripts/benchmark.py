@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from json import load
 from pathlib import Path
 from random import choice
 from statistics import mean
@@ -23,28 +24,32 @@ class BenchmarkResult:
     max_attempts: int
     average_attempts: int
     success_percent: float
+    failed_words: list
 
 
 def test_method(words, solver, suggester, fixed_suggestions=[]):
     t1 = time()
     results = []
+    failed_words = []
     print(suggester.__class__.__name__)
 
     for i, target_word in enumerate(words):
-        suggester.reset()
+        # suggester.reset()
         solved, tried_words, results_array = solver.solve(
             suggester=suggester,
             fixed_suggestions=fixed_suggestions,
             wordle=Wordle(target_word)
         )
         # print(len(tried_words))
+        if len(tried_words) > 6:
+            failed_words.append(target_word)
 
         results.append(len(tried_words))
         # if len(tried_words) > 6:
         #     print(target_word, tried_words)
         if i % 200 == 0:
             print(i)
-        suggester.reset()
+        # suggester.reset()
 
     total_time = time() - t1
     average_time = total_time / len(results)
@@ -57,7 +62,8 @@ def test_method(words, solver, suggester, fixed_suggestions=[]):
         average_time=average_time,
         max_attempts=max_attempts,
         average_attempts=average_attempts,
-        success_percent=success_percent
+        success_percent=success_percent,
+        failed_words=failed_words
     )
 
 
@@ -71,17 +77,30 @@ def run_benchmarks():
     # with open('wordinfo/full_wordle.pickle', 'rb') as f:
     #     entropy_by_word = pickle.load(f)
 
-    from json import load
+
     with open('wordinfo/data/word_frequency_map.json', 'r') as f:
         word_frequency_map = load(f)
 
+    # failed_words = [
+    #     'paper', 'booby', 'crass', 'start', 'weary', 'foyer', 'trite', 'class', 'dandy', 'catch', 'daddy',
+    #     'aging', 'eater', 'tatty', 'bluer', 'joker', 'brass', 'hitch', 'boxer', 'ember', 'grass', 'bound',
+    #     'sheer', 'wafer', 'scout', 'merry', 'state', 'batch', 'golly', 'brown', 'staid', 'vaunt', 'willy',
+    #     'mercy'
+    # ]
+    #
+    # for word in failed_words:
+    #     word_frequency_map[word] += word_frequency_map[word] * 0.05
+
     results = [
-        ('Rank', test_method(words=words, solver=solver, suggester=RankSuggester(full_word_list))),
-        ('Dominance', test_method(words=words, solver=solver, suggester=DominanceSuggester(full_word_list))),
-        ('Dominance Elimination', test_method(words=words, solver=solver, suggester=DominanceEliminationSuggester(full_word_list))),
-        ('Dominance (hard mode)', test_method(words=words, solver=solver, suggester=DominanceHardmodeSuggester(full_word_list))),
-        ('Entropy', test_method(words=words, solver=solver, suggester=EntropySuggester(full_word_list, Path('./cache')))),
+        # ('Rank', test_method(words=words, solver=solver, suggester=RankSuggester(full_word_list))),
+        # ('Dominance', test_method(words=words, solver=solver, suggester=DominanceSuggester(full_word_list))),
+        # ('Dominance Elimination', test_method(words=words, solver=solver, suggester=DominanceEliminationSuggester(full_word_list))),
+        # ('Dominance (hard mode)', test_method(words=words, solver=solver, suggester=DominanceHardmodeSuggester(full_word_list))),
+        # ('Entropy', test_method(words=words, solver=solver, suggester=EntropySuggester(full_word_list, Path('./cache')))),
         ('Popular Word Entropy', test_method(words=words, solver=solver, suggester=PopularEntropySuggester(full_word_list, Path('./cache'), word_frequency_map))),
+
+
+
         # ('Rank', test_method(words=words, solver=solver, suggester=NewOne(words))),
         # ('Rank Modified (Stock)' , test_method(words=words, solver=solver, suggester=RankModifiedSuggester(words))),
         # ('Rank Modified (4)', test_method(words=words, solver=solver, suggester=RankModifiedSuggester(words, expand_selection_index=4))),
@@ -105,6 +124,7 @@ def run_benchmarks():
         print(f'Total Time: {result[1].total_time:.3f}s / {result[1].average_time:.6f}s ea')
         print(f'Avg Tries: {result[1].average_attempts:.3f}')
         print(f'Max Tries: {result[1].max_attempts}')
+        print(f'Failed Words: {len(result[1].failed_words)} - {result[1].failed_words}')
 
         print()
 
