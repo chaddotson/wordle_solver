@@ -7,17 +7,14 @@ DATA_PATH = Path(__file__).parent / 'data'
 
 
 class WordSource(Enum):
-    WORDLE_SOLUTIONS = DATA_PATH / 'wordle_solutions.txt'
-    WORDLE_FULL = DATA_PATH / 'wordle_full.txt'
-    NYT_WORDLE_SOLUTIONS = DATA_PATH / 'new_nyt_wordle_solutions.txt'
-    NYT_WORDLE_FULL = DATA_PATH / 'new_nyt_wordle_full.txt'
+    SOLUTIONS = DATA_PATH / 'solutions.txt'
+    FULL = DATA_PATH / 'full.txt'
 
 
-def load_word_list(wordset=WordSource.NYT_WORDLE_SOLUTIONS):
+def load_word_list(wordset=WordSource.FULL):
     regex = re.compile('[A-Z\d/\.&!\'\-()\x03\x07\x08]')
     with open(wordset.value, 'r') as f:
         return [l.strip('\n').lower() for l in f.readlines() if not regex.search(l) and len(l) == 6]
-
 
 
 def get_word_of_day(wordlist):

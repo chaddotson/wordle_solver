@@ -24,7 +24,7 @@ def solve_todays_wordle():
     words = load_word_list()
     index, word_of_the_day = get_word_of_day(wordlist=words)
     # word_of_the_day = 'paper'
-    words = load_word_list(WordSource.NYT_WORDLE_FULL)
+    words = load_word_list(WordSource.FULL)
     # word_of_the_day='shape'
     # word_of_the_day = 'shake'
 

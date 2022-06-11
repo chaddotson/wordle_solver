@@ -68,8 +68,8 @@ def test_method(words, solver, suggester, fixed_suggestions=[]):
 
 
 def run_benchmarks():
-    words = load_word_list(WordSource.WORDLE_SOLUTIONS)
-    full_word_list = load_word_list(WordSource.WORDLE_FULL)
+    words = load_word_list(WordSource.SOLUTIONS)
+    full_word_list = load_word_list(WordSource.FULL)
 
     solver = Solver()
 

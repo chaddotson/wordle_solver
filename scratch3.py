@@ -10,7 +10,7 @@ from wordinfo.utils import WordSource, load_word_list
 
 
 
-words = load_word_list(WordSource.WORDLE_FULL)
+words = load_word_list(WordSource.FULL)
 
 from hashlib import md5, sha1
 # words = tuple(words)
