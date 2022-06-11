@@ -3,6 +3,7 @@ import json
 import re
 from hashlib import sha1
 from math import log2
+from pathlib import Path
 
 from wordinfo.solver import Wordle
 from wordinfo.suggesters.base import Suggester
@@ -10,9 +11,10 @@ from wordinfo.suggesters.utils import generate_regex
 
 
 class EntropySuggester(Suggester):
-    def __init__(self, wordlist, cache_path, *args, **kwargs):
+    def __init__(self, wordlist, cache_path: Path, *args, **kwargs):
         self._words = wordlist
         self._cache_path = cache_path
+        cache_path.mkdir(exist_ok=True)
 
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
         regex = generate_regex(attempt_words, letter_tracker)
