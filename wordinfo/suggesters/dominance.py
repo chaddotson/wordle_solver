@@ -22,12 +22,16 @@ class DominanceSuggester(RankSuggester):
 
 
 class DominanceEliminationSuggester(DominanceSuggester):
+    def __init__(self, wordlist, elimination_attempts=4, *args, **kwargs):
+        super().__init__(wordlist, *args, **kwargs)
+        self.elimination_attempts = elimination_attempts
+
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
         elimination_regex = generate_regex_for_eliminations(attempt_words, letter_tracker)
         regex = generate_regex(attempt_words, letter_tracker)
 
         try:
-            if len(attempt_words) < 5:
+            if len(attempt_words) < self.elimination_attempts:
                 return generate_suggestion_by_ranked(self._dedup_dominance_ranked, elimination_regex)
             # return generate_suggestion_by_ranked(self._dominance_ranked, elimination_regex)
             # if len(attempt_words) < 4:
