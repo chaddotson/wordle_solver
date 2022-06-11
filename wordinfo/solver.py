@@ -6,6 +6,12 @@ logger = getLogger(__name__)
 
 @dataclass(init=False)
 class LetterTracker:
+    """
+    Stores the current status of a sequence of guesses.
+    at: list of known positions
+    not_at: dict of known bad placements
+    invalids: set of known invalid letters
+    """
     at: list
     not_at: dict
     invalids: set
@@ -21,14 +27,17 @@ class LetterTracker:
 
 
 class Wordle(object):
+    """Stores the current target word (wordle)"""
     def __init__(self, target_word):
         self._target_word = target_word
 
     @property
     def target_word(self):
+        """Get the target word"""
         return self._target_word
 
     def guess(self, word):
+        """Check a word to see how it compares to the target word."""
         results = []
         for index, (l, r) in enumerate(zip(word, self._target_word)):
             if l == r:
@@ -41,10 +50,15 @@ class Wordle(object):
 
 
 class Solver(object):
-    def __init__(self, *args, **kwargs):
-        pass
-
+    """Worlde puzzle solver"""
     def solve(self, suggester, fixed_suggestions, wordle, *args, **kwargs):
+        """
+        Solve the wordle with the specified suggester algorithm
+        :param suggester: The object responsible for generating word guesses.
+        :param fixed_suggestions: A fixed set of suggestions to start with.
+        :param wordle: The object responsible for holding and testing guesses.
+        :returns: a tuple containing if it was solved, the words attempted and the results.
+        """
         attempt_words = []
         attempt_results = []
 
