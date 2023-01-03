@@ -89,7 +89,7 @@ class PopularEntropySuggester(Suggester):
         # suggestion = max(entropy_by_word, key=entropy_by_word.get)
         top_suggestions = heapq.nlargest(20, entropy_by_word, key=entropy_by_word.get)
         #
-        suggestion = sorted(top_suggestions, key=lambda w: self._word_frequency_map[w], reverse=True)[0]
+        suggestion = sorted(top_suggestions, key=lambda w: self._word_frequency_map.get(w, 0), reverse=True)[0]
 
         return suggestion
 
