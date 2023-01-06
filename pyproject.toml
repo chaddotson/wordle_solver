@@ -18,6 +18,10 @@ flake8 = "^4.0.1"
 benchmark_wordle_solver = "wordinfo.scripts.benchmark:run_benchmarks"
 solve_todays_wordle = "wordinfo.scripts.solve_todays_wordle:solve_todays_wordle"
 
+[tool.isort]
+multi_line_output = 5
+line_length = 120
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

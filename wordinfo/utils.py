@@ -1,7 +1,8 @@
+import re
 from datetime import date
 from enum import Enum
 from pathlib import Path
-import re
+
 import requests
 
 DATA_PATH = Path(__file__).parent / 'data'

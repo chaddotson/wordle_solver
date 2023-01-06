@@ -1,21 +1,17 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from json import load
-from logging import basicConfig, getLogger, INFO
+from logging import INFO, basicConfig, getLogger
 from pathlib import Path
 from statistics import mean
 from time import time
 
-
-from wordinfo.solver import (
-    Solver, Wordle
-)
+from wordinfo.solver import Solver, Wordle
 from wordinfo.suggesters.base import Suggester
+from wordinfo.suggesters.dominance import DominanceDedupSuggester, DominanceEliminationSuggester, DominanceSuggester
 from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
-from wordinfo.suggesters.dominance import DominanceSuggester, DominanceDedupSuggester, DominanceEliminationSuggester
-from wordinfo.suggesters.rank import RankSuggester, RankDedupSuggester
-from wordinfo.utils import load_word_list, WordSource
-
+from wordinfo.suggesters.rank import RankDedupSuggester, RankSuggester
+from wordinfo.utils import WordSource, load_word_list
 
 logger = getLogger(__name__)
 

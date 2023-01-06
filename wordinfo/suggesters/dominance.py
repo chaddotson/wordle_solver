@@ -1,7 +1,7 @@
 from collections import Counter
 
-from wordinfo.suggesters.utils import generate_regex, generate_suggestion_by_ranked, generate_regex_for_eliminations
 from wordinfo.suggesters.rank import RankSuggester
+from wordinfo.suggesters.utils import generate_regex, generate_regex_for_eliminations, generate_suggestion_by_ranked
 
 
 class DominanceSuggester(RankSuggester):

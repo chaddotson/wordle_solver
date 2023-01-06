@@ -20,11 +20,11 @@
 #
 #
 # print(response.text)
-from difflib import SequenceMatcher
-
 import statistics
-from wordinfo.utils import load_word_list, WordSource
+from difflib import SequenceMatcher
 from itertools import combinations
+
+from wordinfo.utils import WordSource, load_word_list
 
 words = load_word_list(WordSource.FULL)
 

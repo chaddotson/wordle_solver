@@ -1,23 +1,15 @@
 from wordinfo.solver import Wordle
 from wordinfo.utils import WordSource, load_word_list
 
-
-
-
-
-
-
-
-
-
 words = load_word_list(WordSource.FULL)
 
 from hashlib import md5, sha1
+from json import dump, dumps
+
 # words = tuple(words)
 #
 # print(hash(words))
 
-from json import dumps, dump
 
 id = sha1(dumps(words).encode()).hexdigest()[0:8]
 
@@ -82,6 +74,7 @@ entropy_calc = {}
 #
 
 import pickle
+
 #
 # entropy_by_word = calculate_entroy_by_word(words)
 # with open('./full_wordle.pickle', 'wb') as f:

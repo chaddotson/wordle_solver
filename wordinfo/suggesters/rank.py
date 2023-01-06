@@ -1,7 +1,7 @@
 from collections import Counter
 
-from wordinfo.suggesters.utils import generate_regex, generate_suggestion_by_ranked
 from wordinfo.suggesters.base import Suggester
+from wordinfo.suggesters.utils import generate_regex, generate_suggestion_by_ranked
 
 
 class RankSuggester(Suggester):

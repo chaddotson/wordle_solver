@@ -1,15 +1,14 @@
 from json import load
-from logging import basicConfig, INFO
+from logging import INFO, basicConfig
 from pathlib import Path
 from time import time
 from typing import List
 
-
 from wordinfo.solver import Solver, Wordle
 from wordinfo.suggesters.base import Suggester
+from wordinfo.suggesters.dominance import DominanceDedupSuggester, DominanceEliminationSuggester, DominanceSuggester
 from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
-from wordinfo.suggesters.dominance import DominanceSuggester, DominanceDedupSuggester, DominanceEliminationSuggester
-from wordinfo.utils import load_word_list, get_word_of_day, get_result_representation, WordSource
+from wordinfo.utils import WordSource, get_result_representation, get_word_of_day, load_word_list
 
 
 def solve_with_method(suggester: Suggester, wordle: Wordle, fixed_suggestions: List[str] = None):
