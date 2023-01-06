@@ -27,8 +27,8 @@ def generate_regex(bad_words, letter_tracker):
     :param letter_tracker: Object tracking attempts and results.
     :returns: regex string
     """
-    letters_regex = ''.join([f'{"".join(f"(?!{nat})" for nat in letter_tracker.not_at.get(index, []))}[a-z]' if letter_tracker.at[index] is None else letter_tracker.at[index] for index in range(len(letter_tracker.at))])
-    contains_regex = ''.join(f'(?=.*{letter})' for position_not_ats in letter_tracker.not_at.values() for letter in position_not_ats)
+    letters_regex = ''.join([f'{"".join(f"(?!{nat})" for nat in letter_tracker.not_at.get(index, []))}[a-z]' if letter_tracker.at[index] is None else letter_tracker.at[index] for index in range(len(letter_tracker.at))])     # noqa: E501
+    contains_regex = ''.join(f'(?=.*{letter})' for position_not_ats in letter_tracker.not_at.values() for letter in position_not_ats)   # noqa: E501
     invalids_regex = ''.join(f'(?!.*{invalid})' for invalid in letter_tracker.invalids)
     invalid_words_regex = ''.join(f'(?!{word})' for word in bad_words)
     total_regex = f'^{invalid_words_regex}{invalids_regex}{contains_regex}(?:{letters_regex})$'
@@ -38,12 +38,10 @@ def generate_regex(bad_words, letter_tracker):
 def generate_suggestion_by_ranked(ranked, regex):
     """
     Find the best word given the ranked list that fits the regex.
-    :param ranked:
-    :param regex:
-    :return:
+    :param ranked: A list of ranked words
+    :param regex: The regex responsible for finding a fitting suggestion.
+    :return: The word to try
+    :raises: StopIteration if no word found.
     """
-    # try:
     suggestion, _ = next(pair for pair in ranked if re.search(regex, pair[0]))
-    # except StopIteration:
-    #     suggestion, _ = next(pair for pair in ranked if re.search(regex[1], pair[0]))
     return suggestion
