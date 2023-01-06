@@ -1,28 +1,71 @@
 from collections import Counter
 
 from wordinfo.suggesters.utils import generate_regex, generate_suggestion_by_ranked, generate_regex_for_eliminations
-from wordinfo.suggesters.rank import RankSuggester, RankModifiedSuggester
+from wordinfo.suggesters.rank import RankSuggester
 
 
 class DominanceSuggester(RankSuggester):
+    """
+    Generates wordle guesses based on letter positional dominance.
+
+    Note: Disallows duplicate letters on first guess.
+    """
+    __pretty_name__ = 'Dominance'
+
     def __init__(self, wordlist, *args, **kwargs):
         super().__init__(wordlist, *args, **kwargs)
         positional_dominance = get_posititional_dominance(wordlist)
         dominance_word_score = {word: dominance_score_word(positional_dominance, word) for word in wordlist}
-        self._dominance_ranked = sorted([(word, score) for word, score in dominance_word_score.items()], key=lambda x: x[1], reverse=True)
+        self._dominance_ranked = sorted([(word, score) for word, score in dominance_word_score.items()], key=lambda x: x[1], reverse=True)  # noqa: E501
 
         self._dedup_words = [word for word in wordlist if not any(c > 1 for c in Counter(word).values())]
         positional_dominance = get_posititional_dominance(self._dedup_words)
-        dedup_dominance_word_score = {word: dominance_score_word(positional_dominance, word) for word in self._dedup_words}
-        self._dedup_dominance_ranked = sorted([(word, score) for word, score in dedup_dominance_word_score.items()], key=lambda x: x[1], reverse=True)
+        dedup_dominance_word_score = {word: dominance_score_word(positional_dominance, word) for word in self._dedup_words}  # noqa: E501
+        self._dedup_dominance_ranked = sorted([(word, score) for word, score in dedup_dominance_word_score.items()], key=lambda x: x[1], reverse=True)  # noqa: E501
 
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
         regex = generate_regex(attempt_words, letter_tracker)
+        if not len(attempt_words):
+            return generate_suggestion_by_ranked(self._dedup_dominance_ranked, regex)
         return generate_suggestion_by_ranked(self._dominance_ranked, regex)
 
 
+class DominanceDedupSuggester(DominanceSuggester):
+    """
+    Generates wordle guesses based on letter positional dominance but with no duplicates allowed on
+    the first few attempts.
+    """
+
+    __pretty_name__ = 'Dominance (dedup)'
+
+    def __init__(self, wordlist, *args, expand_selection_index=3, **kwargs):
+        super().__init__(wordlist, *args, **kwargs)
+        self._expand_selection_index = expand_selection_index
+        self._dedup_words = [word for word in wordlist if not any(c > 1 for c in Counter(word).values())]
+        positional_dominance = get_posititional_dominance(self._dedup_words)
+        dedup_dominance_word_score = {word: dominance_score_word(positional_dominance, word) for word in self._dedup_words}  # noqa: E501
+        self._dedup_dominance_ranked = sorted([(word, score) for word, score in dedup_dominance_word_score.items()], key=lambda x: x[1], reverse=True)  # noqa: E501
+
+    def get_suggestion(self, attempt, attempt_words, letter_tracker):
+        regex = generate_regex(attempt_words, letter_tracker)
+        try:
+            if attempt < self._expand_selection_index:
+                suggestion = generate_suggestion_by_ranked(self._dedup_dominance_ranked, regex)
+            else:
+                suggestion = generate_suggestion_by_ranked(self._dominance_ranked, regex)
+        except StopIteration:
+            suggestion = generate_suggestion_by_ranked(self._dominance_ranked, regex)
+        return suggestion
+
+
 class DominanceEliminationSuggester(DominanceSuggester):
-    def __init__(self, wordlist, elimination_attempts=4, *args, **kwargs):
+    """
+    Generates wordle guesses based on letter positional dominance but do it attempting to fully eliminate
+    characters for the first few attempts.
+    """
+    __pretty_name__ = 'Dominance Elimination'
+
+    def __init__(self, wordlist, elimination_attempts=3, *args, **kwargs):
         super().__init__(wordlist, *args, **kwargs)
         self.elimination_attempts = elimination_attempts
 
@@ -41,74 +84,6 @@ class DominanceEliminationSuggester(DominanceSuggester):
             #     return generate_suggestion_by_ranked(self._dominance_ranked, regex)
         except StopIteration:
             return generate_suggestion_by_ranked(self._dominance_ranked, regex)
-
-
-class DominanceHardmodeSuggester(DominanceSuggester):
-    # def __init__(self, wordlist, *args, **kwargs):
-    #     super().__init__(wordlist, *args, **kwargs)
-    #     positional_dominance = get_posititional_dominance(wordlist)
-    #     dominance_word_score = {word: dominance_score_word(positional_dominance, word) for word in wordlist}
-    #     self._dominance_ranked = sorted([(word, score) for word, score in dominance_word_score.items()], key=lambda x: x[1], reverse=True)
-
-    def get_suggestion(self, attempt, attempt_words, letter_tracker):
-        regex = generate_regex(attempt_words, letter_tracker)
-
-        # suggestion, _ = choice(re.(regex, self._dominance_ranked[0]))
-
-        # suggestion, _ = [pair for pair in self._dominance_ranked if re.search(regex, pair[0])]
-
-        # try:
-        #     # if len(attempt_words) <= 2:
-        #     #     return generate_suggestion_by_ranked(self._dedup_dominance_ranked[-1:0:-1], regex)
-        #     # else:
-        #         return generate_suggestion_by_ranked(self._dedup_dominance_ranked, regex)
-        # except StopIteration:
-        #     return generate_suggestion_by_ranked(self._dominance_ranked, regex)
-
-        return generate_suggestion_by_ranked(self._dominance_ranked, regex)
-        # return choice([pair[0] for pair in self._dominance_ranked if re.search(regex, pair[0])])
-        #
-        #
-        # try:
-        #     return generate_suggestion_by_ranked(self._dominance_ranked, regex)
-        #
-        # except StopIteration:
-        #     return generate_suggestion_by_ranked(self._dominance_ranked, regex)
-
-
-class DominanceModifiedSuggester(DominanceSuggester):
-    def __init__(self, wordlist, *args, expand_selection_index=3, **kwargs):
-        super().__init__(wordlist, *args, **kwargs)
-        self._expand_selection_index = expand_selection_index
-
-    def get_suggestion(self, attempt, attempt_words, letter_tracker):
-        regex = generate_regex(attempt_words, letter_tracker)
-        try:
-            if attempt < self._expand_selection_index:
-                suggestion = generate_suggestion_by_ranked(self._dominance_ranked, regex)
-            else:
-                suggestion = generate_suggestion_by_ranked(self._ranked, regex)
-        except StopIteration:
-            suggestion = generate_suggestion_by_ranked(self._ranked, regex)
-        return suggestion
-
-
-class DominanceModifiedAltSuggester(DominanceSuggester, RankModifiedSuggester):
-    def __init__(self, wordlist, *args, expand_selection_index=3, **kwargs):
-        super().__init__(wordlist, *args, **kwargs)
-        self._expand_selection_index = expand_selection_index
-
-
-    def get_suggestion(self, attempt, attempt_words, letter_tracker):
-        regex = generate_regex(attempt_words, letter_tracker)
-        try:
-            if attempt < self._expand_selection_index:
-                suggestion = generate_suggestion_by_ranked(self._dominance_ranked, regex)
-            else:
-                suggestion = generate_suggestion_by_ranked(self._dedup_ranked, regex)
-        except StopIteration:
-            suggestion = generate_suggestion_by_ranked(self._ranked, regex)
-        return suggestion
 
 
 def get_posititional_dominance(wordle_words):

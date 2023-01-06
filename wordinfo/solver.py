@@ -39,10 +39,10 @@ class Wordle(object):
     def guess(self, word):
         """Check a word to see how it compares to the target word."""
         results = []
-        for index, (l, r) in enumerate(zip(word, self._target_word)):
-            if l == r:
+        for index, (left_char, right_char) in enumerate(zip(word, self._target_word)):
+            if left_char == right_char:
                 results.append(2)
-            elif l in self._target_word:
+            elif left_char in self._target_word:
                 results.append(1)
             else:
                 results.append(0)
@@ -50,7 +50,7 @@ class Wordle(object):
 
 
 class Solver(object):
-    """Worlde puzzle solver"""
+    """Wordle puzzle solver"""
     def solve(self, suggester, fixed_suggestions, wordle, *args, **kwargs):
         """
         Solve the wordle with the specified suggester algorithm
@@ -92,5 +92,3 @@ class Solver(object):
             attempt += 1
 
         return solved, attempt_words, attempt_results
-
-

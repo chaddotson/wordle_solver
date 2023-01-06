@@ -7,5 +7,3 @@ def test_does_get_score_by_letter():
     assert letter_scores['t'] == 3
     assert letter_scores['o'] == 2
     assert letter_scores['e'] == 1
-
-
