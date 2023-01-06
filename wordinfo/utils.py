@@ -13,9 +13,9 @@ class WordSource(Enum):
 
 
 def load_word_list(wordset=WordSource.FULL):
-    regex = re.compile('[A-Z\d/\.&!\'\-()\x03\x07\x08]')
+    regex = re.compile(r'[A-Z\d/\.&!\'\-()\x03\x07\x08]')
     with open(wordset.value, 'r') as f:
-        return [l.strip('\n').lower() for l in f.readlines() if not regex.search(l) and len(l) == 6]
+        return [line.strip('\n').lower() for line in f.readlines() if not regex.search(line) and len(line) == 6]
 
 
 def get_word_of_day():
