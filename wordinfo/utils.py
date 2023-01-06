@@ -2,6 +2,7 @@ from datetime import date
 from enum import Enum
 from pathlib import Path
 import re
+import requests
 
 DATA_PATH = Path(__file__).parent / 'data'
 
@@ -17,11 +18,17 @@ def load_word_list(wordset=WordSource.FULL):
         return [l.strip('\n').lower() for l in f.readlines() if not regex.search(l) and len(l) == 6]
 
 
-def get_word_of_day(wordlist):
-    start_date = date(year=2021, month=6, day=19)
-    today = date.today()
-    index = (today - start_date).days
-    return index, wordlist[index]
+def get_word_of_day():
+    today_url = f'https://www.nytimes.com/svc/wordle/v2/{date.today():%Y-%m-%d}.json'
+
+    response = requests.get(today_url)
+
+    if not response.ok:
+        raise RuntimeError(f'Failed to get today\'s wordle information. URL {today_url}')
+
+    todays_data = response.json()
+
+    return todays_data['id'], todays_data['solution']
 
 
 REPRESENTATION_MAP = {
