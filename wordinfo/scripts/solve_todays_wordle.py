@@ -1,4 +1,3 @@
-from json import load
 from logging import INFO, basicConfig
 from pathlib import Path
 from time import time
@@ -8,7 +7,9 @@ from wordinfo.solver import Solver, Wordle
 from wordinfo.suggesters.base import Suggester
 from wordinfo.suggesters.dominance import DominanceDedupSuggester, DominanceEliminationSuggester, DominanceSuggester
 from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
-from wordinfo.utils import WordSource, get_result_representation, get_word_of_day, load_word_list
+from wordinfo.utils import (
+    WordSource, get_result_representation, get_word_of_day, load_word_frequency_list, load_word_list
+)
 
 
 def solve_with_method(suggester: Suggester, wordle: Wordle, fixed_suggestions: List[str] = None):
@@ -63,8 +64,7 @@ def solve_todays_wordle():
     index, word_of_the_day = get_word_of_day()
     words = load_word_list(WordSource.FULL)
 
-    with open('wordinfo/data/word_frequency_map.json', 'r') as f:
-        word_frequency_map = load(f)
+    word_frequency_map = load_word_frequency_list()
 
     solve_with_method(DominanceSuggester(words), Wordle(word_of_the_day))
     solve_with_method(DominanceDedupSuggester(words), Wordle(word_of_the_day))

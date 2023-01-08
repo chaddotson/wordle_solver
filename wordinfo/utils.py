@@ -1,6 +1,7 @@
 import re
 from datetime import date
 from enum import Enum
+from json import load
 from pathlib import Path
 
 import requests
@@ -17,6 +18,11 @@ def load_word_list(wordset=WordSource.FULL):
     regex = re.compile(r'[A-Z\d/\.&!\'\-()\x03\x07\x08]')
     with open(wordset.value, 'r') as f:
         return [line.strip('\n').lower() for line in f.readlines() if not regex.search(line) and len(line) == 6]
+
+
+def load_word_frequency_list():
+    with open(DATA_PATH / 'word_frequency.json', 'r') as f:
+        return load(f)
 
 
 def get_word_of_day():

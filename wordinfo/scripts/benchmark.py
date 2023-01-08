@@ -1,6 +1,5 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
-from json import load
 from logging import INFO, basicConfig, getLogger
 from pathlib import Path
 from statistics import mean
@@ -11,7 +10,7 @@ from wordinfo.suggesters.base import Suggester
 from wordinfo.suggesters.dominance import DominanceDedupSuggester, DominanceEliminationSuggester, DominanceSuggester
 from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
 from wordinfo.suggesters.rank import RankDedupSuggester, RankSuggester
-from wordinfo.utils import WordSource, load_word_list
+from wordinfo.utils import WordSource, load_word_frequency_list, load_word_list
 
 logger = getLogger(__name__)
 
@@ -71,8 +70,7 @@ def run_benchmarks():
     words = load_word_list(WordSource.SOLUTIONS)
     full_word_list = load_word_list(WordSource.FULL)
 
-    with open('wordinfo/data/word_frequency_map.json', 'r') as f:
-        word_frequency_map = load(f)
+    word_frequency_map = load_word_frequency_list()
 
     suggesters = [
         RankSuggester(full_word_list),
