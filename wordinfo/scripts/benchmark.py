@@ -17,6 +17,9 @@ logger = getLogger(__name__)
 
 @dataclass
 class BenchmarkResult:
+    """
+    Container for the benchmark results.
+    """
     suggester: Suggester
     total_time: float
     average_time: float
@@ -26,7 +29,16 @@ class BenchmarkResult:
     failed_words: list
 
 
-def test_method(words, suggester, fixed_suggestions=[]):
+def benchmark_method(words, suggester, fixed_suggestions=None):
+    """
+    Benchmark the specified word suggester vs the list of words.
+    :param words: List of words to test the suggester on.
+    :param suggester: The algorithm to use for suggesting words.
+    :param fixed_suggestions: A list of fixed words to use first.
+    :return: Benchmark results containing how well the suggester did.
+    """
+    fixed_suggestions = [] if fixed_suggestions is None else fixed_suggestions
+
     t1 = time()
     results = []
     failed_words = []
@@ -67,6 +79,9 @@ def test_method(words, suggester, fixed_suggestions=[]):
 
 
 def run_benchmarks():
+    """
+    Run all benchmarks.
+    """
     words = load_word_list(WordSource.SOLUTIONS)
     full_word_list = load_word_list(WordSource.FULL)
 
@@ -83,7 +98,7 @@ def run_benchmarks():
     ]
 
     with ProcessPoolExecutor() as ex:
-        promises = [ex.submit(test_method, words, suggester=suggester) for suggester in suggesters]
+        promises = [ex.submit(benchmark_method, words, suggester=suggester) for suggester in suggesters]
 
     results = [result.result() for result in as_completed(promises)]
     results.sort(key=lambda x: x.success_percent, reverse=True)
