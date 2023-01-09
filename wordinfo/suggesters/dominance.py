@@ -35,7 +35,6 @@ class DominanceDedupSuggester(DominanceSuggester):
     Generates wordle guesses based on letter positional dominance but with no duplicates allowed on
     the first few attempts.
     """
-
     __pretty_name__ = 'Dominance (dedup)'
 
     def __init__(self, wordlist, *args, expand_selection_index=3, **kwargs):
@@ -87,6 +86,11 @@ class DominanceEliminationSuggester(DominanceSuggester):
 
 
 def get_posititional_dominance(wordle_words):
+    """
+    Calculate the positional dominance given the specified wordlist
+    :param wordle_words: List of words to calculate positional dominance for.
+    :return: A dictionary containing positional dominance by letter index.
+    """
     raw_dominance_count = {}
     for word in wordle_words:
         for index, letter in enumerate(word):
@@ -112,6 +116,12 @@ def get_posititional_dominance(wordle_words):
 
 
 def dominance_score_word(dominance_by_index, word):
+    """
+    Score a word based on the positional dominance data.
+    :param dominance_by_index: The calculated positional dominance.
+    :param word: The word to score.
+    :return: The score of the word.
+    """
     value = 0
     # seen_letters = set()
     for index, letter in enumerate(word):
