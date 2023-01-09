@@ -18,7 +18,7 @@ class RankSuggester(Suggester):
 
 
 class RankDedupSuggester(RankSuggester):
-    __pretty_name__ = 'Rank Dedup'
+    __pretty_name__ = 'Rank (dedup)'
 
     def __init__(self, wordlist, *args, expand_selection_index=3, **kwargs):
         super().__init__(wordlist, *args, **kwargs)
