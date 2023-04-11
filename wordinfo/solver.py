@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 from logging import getLogger
+import re
+
+from wordinfo.suggesters.utils import generate_regex
+
 
 logger = getLogger(__name__)
 
@@ -66,9 +70,22 @@ class Solver(object):
 
         attempt = 0
         solved = False
+
+        fixed_index = 0
+
         while not solved:
-            if attempt < len(fixed_suggestions):
-                suggestion = fixed_suggestions[attempt]
+
+            tester_regex = generate_regex(attempt_words, letter_tracker)
+
+            while fixed_index < len(fixed_suggestions):
+                if re.search(tester_regex, fixed_suggestions[fixed_index]):
+                    suggestion = fixed_suggestions[fixed_index]
+                    break
+                fixed_index += 1
+
+            # if attempt < len(fixed_suggestions) and re.search(tester_regex, fixed_suggestions[attempt]):
+            #     print(fixed_suggestions[attempt])
+            #     suggestion = fixed_suggestions[attempt]
             else:
                 suggestion = suggester.get_suggestion(attempt, attempt_words, letter_tracker)
 
