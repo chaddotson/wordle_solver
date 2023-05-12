@@ -5,7 +5,7 @@ description = ""
 authors = ["Chad Dotson <1754094+chaddotson@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 
 requests = "^2.27.1"
 
