@@ -83,20 +83,14 @@ class Solver(object):
                     break
                 fixed_index += 1
 
-            # if attempt < len(fixed_suggestions) and re.search(tester_regex, fixed_suggestions[attempt]):
-            #     print(fixed_suggestions[attempt])
-            #     suggestion = fixed_suggestions[attempt]
             else:
                 suggestion = suggester.get_suggestion(attempt, attempt_words, letter_tracker)
-
-            # print('suggestion:', suggestion)
 
             attempt_words.append(suggestion)
             solved, result = wordle.guess(suggestion)
             attempt_results.append(result)
 
             for index, (code, letter) in enumerate(zip(result, suggestion)):
-                # print(index, code, letter)
                 if code == 2:
                     letter_tracker.at[index] = letter
                 elif code == 1:
