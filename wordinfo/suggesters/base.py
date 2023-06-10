@@ -12,4 +12,4 @@ class Suggester(object):
         return self.__class__.__name__
 
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
-        raise NotImplemented()
+        raise NotImplementedError()
