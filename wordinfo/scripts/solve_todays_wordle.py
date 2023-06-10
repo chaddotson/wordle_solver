@@ -40,11 +40,11 @@ def print_results(results_array: List[List[str]], suggester: Suggester, total_ti
     """
     Print the results of a solve attempt to the console.
     :param results_array:
-    :param suggester:
-    :param total_time:
-    :param tried_words:
-    :param wordle:
-    :return:
+    :param suggester: A class instance that implements get_suggestion.
+    :param total_time: Total time in seconds to solve.
+    :param tried_words: The list of words attempted.
+    :param wordle: The instance of the target word implements target_word and guess.
+    :return: None
     """
     print(f"""
 Method: {suggester.__class__.__name__}
@@ -64,14 +64,16 @@ def solve_todays_wordle():
     index, word_of_the_day = get_word_of_day()
     words = load_word_list(WordSource.FULL)
 
+    wordle = Wordle(word_of_the_day)
     word_frequency_map = load_word_frequency_list()
 
-    solve_with_method(DominanceSuggester(words), Wordle(word_of_the_day))
-    solve_with_method(DominanceDedupSuggester(words), Wordle(word_of_the_day))
-    solve_with_method(DominanceEliminationSuggester(words), Wordle(word_of_the_day))
+    solve_with_method(DominanceSuggester(words), wordle)
+    solve_with_method(DominanceDedupSuggester(words), wordle)
+    solve_with_method(DominanceEliminationSuggester(words), wordle)
 
-    solve_with_method(EntropySuggester(words, Path('./cache')), Wordle(word_of_the_day))
-    solve_with_method(PopularEntropySuggester(words, Path('./cache'), word_frequency_map), Wordle(word_of_the_day))
+    cache_path = Path('./cache')
+    solve_with_method(EntropySuggester(words, cache_path), wordle)
+    solve_with_method(PopularEntropySuggester(words, cache_path, word_frequency_map), wordle)
 
 
 if __name__ == '__main__':
