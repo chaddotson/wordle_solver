@@ -1,5 +1,9 @@
 # wordle_solver
-My wordle solver
+My wordle solver. Interesting comparison of multiple strategies. 
+Success-wise entropy solvers most often get it within 6 attempts. 
+Interestingly, using letter positional dominance with the initial 
+objective of eliminating letters is fast and very nearly as
+successful.
 
 
 # Benchmarks
