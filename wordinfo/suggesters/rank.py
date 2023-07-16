@@ -1,7 +1,8 @@
 from collections import Counter
+from functools import cached_property
 
 from wordinfo.suggesters.base import Suggester
-from wordinfo.suggesters.utils import generate_regex, generate_suggestion_by_ranked
+from wordinfo.suggesters.utils import generate_regex, generate_regex_for_eliminations, generate_suggestion_by_ranked
 
 
 class RankSuggester(Suggester):
@@ -15,6 +16,34 @@ class RankSuggester(Suggester):
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
         regex = generate_regex(attempt_words, letter_tracker)
         return generate_suggestion_by_ranked(self._ranked, regex)
+
+
+class RankEliminationSuggester(RankSuggester):
+    """
+    Generates wordle guesses based on letter positional dominance but do it attempting to fully eliminate
+    characters for the first few attempts.
+    """
+    __pretty_name__ = 'Rank Elimination {elimination_attempts}'
+
+    def __init__(self, wordlist, elimination_attempts=3, *args, **kwargs):
+        super().__init__(wordlist, *args, **kwargs)
+        self.elimination_attempts = elimination_attempts
+
+    def get_suggestion(self, attempt, attempt_words, letter_tracker):
+        elimination_regex = generate_regex_for_eliminations(attempt_words, letter_tracker)
+        regex = generate_regex(attempt_words, letter_tracker)
+
+        try:
+            if len(attempt_words) < self.elimination_attempts:
+                return generate_suggestion_by_ranked(self._ranked, elimination_regex)
+            # return generate_suggestion_by_ranked(self._dominance_ranked, elimination_regex)
+            # if len(attempt_words) < 4:
+            else:
+                return generate_suggestion_by_ranked(self._ranked, regex)
+            # else:
+            #     return generate_suggestion_by_ranked(self._dominance_ranked, regex)
+        except StopIteration:
+            return generate_suggestion_by_ranked(self._ranked, regex)
 
 
 class RankDedupSuggester(RankSuggester):

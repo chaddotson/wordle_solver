@@ -7,9 +7,10 @@ from time import time
 
 from wordinfo.solver import Solver, Wordle
 from wordinfo.suggesters.base import Suggester
+from wordinfo.suggesters.hybrid import DominananceEntropyEliminationSuggester, RankEntropyEliminationSuggester
 from wordinfo.suggesters.dominance import DominanceDedupSuggester, DominanceEliminationSuggester, DominanceSuggester
-from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
-from wordinfo.suggesters.rank import RankDedupSuggester, RankSuggester
+from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester, PopularEntropyEliminationSuggester
+from wordinfo.suggesters.rank import RankDedupSuggester, RankSuggester, RankEliminationSuggester
 from wordinfo.utils import WordSource, load_word_frequency_list, load_word_list
 
 logger = getLogger(__name__)
@@ -89,12 +90,31 @@ def run_benchmarks():
 
     suggesters = [
         RankSuggester(full_word_list),
+        RankEliminationSuggester(full_word_list, elimination_attempts=2),
+        RankEliminationSuggester(full_word_list, elimination_attempts=3),
+        RankEliminationSuggester(full_word_list, elimination_attempts=4),
+        RankEliminationSuggester(full_word_list, elimination_attempts=5),
         RankDedupSuggester(full_word_list),
         DominanceSuggester(full_word_list),
         DominanceDedupSuggester(full_word_list),
-        DominanceEliminationSuggester(full_word_list),
+        DominanceEliminationSuggester(full_word_list, elimination_attempts=2),
+        DominanceEliminationSuggester(full_word_list, elimination_attempts=3),
+        DominanceEliminationSuggester(full_word_list, elimination_attempts=4),
+        DominanceEliminationSuggester(full_word_list, elimination_attempts=5),
         EntropySuggester(full_word_list, Path('./cache')),
-        PopularEntropySuggester(full_word_list, Path('./cache'), word_frequency_map)
+        PopularEntropySuggester(full_word_list, Path('./cache'), word_frequency_map),
+        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=2),
+        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=3),
+        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=4),
+        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=5),
+        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=2),
+        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=3),
+        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=4),
+        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=5),
+        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=2),
+        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=3),
+        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=4),
+        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=5),
     ]
 
     with ProcessPoolExecutor() as ex:
@@ -103,8 +123,8 @@ def run_benchmarks():
     results = [result.result() for result in as_completed(promises)]
     results.sort(key=lambda x: x.success_percent, reverse=True)
 
-    format_header = '{:>30} {:>15} {:>15} {:>15} {:>15} {:>15}'
-    format_row = '{:>30} {:>15.3f} {:>15.3f} {:>15.6f} {:>15.3f} {:>15}'
+    format_header = '{:>35} {:>15} {:>15} {:>15} {:>15} {:>15}'
+    format_row = '{:>35} {:>15.3f} {:>15.3f} {:>15.6f} {:>15.3f} {:>15}'
 
     print(format_header.format('Method', 'Success %', 'Total Seconds', 'Avg Seconds', 'Avg Tries', 'Max Tries'))
     for result in results:

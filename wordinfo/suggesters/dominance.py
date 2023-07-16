@@ -62,7 +62,7 @@ class DominanceEliminationSuggester(DominanceSuggester):
     Generates wordle guesses based on letter positional dominance but do it attempting to fully eliminate
     characters for the first few attempts.
     """
-    __pretty_name__ = 'Dominance Elimination'
+    __pretty_name__ = 'Dominance Elimination {elimination_attempts}'
 
     def __init__(self, wordlist, elimination_attempts=3, *args, **kwargs):
         super().__init__(wordlist, *args, **kwargs)

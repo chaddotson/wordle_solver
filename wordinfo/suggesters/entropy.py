@@ -1,3 +1,4 @@
+from functools import cached_property
 import heapq
 import json
 import re
@@ -7,7 +8,7 @@ from pathlib import Path
 
 from wordinfo.solver import Wordle
 from wordinfo.suggesters.base import Suggester
-from wordinfo.suggesters.utils import generate_regex
+from wordinfo.suggesters.utils import generate_regex, generate_regex_for_eliminations
 
 
 class EntropySuggester(Suggester):
@@ -70,8 +71,32 @@ class PopularEntropySuggester(EntropySuggester):
 
         entropy_by_word = self._get_entropy_by_word(words)
         top_suggestions = heapq.nlargest(40, entropy_by_word, key=entropy_by_word.get)
+        # print(top_suggestions)
         suggestion = sorted(top_suggestions, key=lambda w: self._word_frequency_map.get(w, 0), reverse=True)[0]
         return suggestion
+
+
+class PopularEntropyEliminationSuggester(PopularEntropySuggester):
+    __pretty_name__ = 'Popular Entropy Elimination {elimination_attempts}'
+
+    def __init__(self, wordlist, cache_path, word_frequency_map, elimination_attempts=3, *args, **kwargs):
+        super().__init__(wordlist, cache_path, word_frequency_map)
+        self.elimination_attempts = elimination_attempts
+
+    def _get_viable_words(self, attempt_words, letter_tracker):
+        use_elimination = len(attempt_words) < self.elimination_attempts
+        if use_elimination:
+            regex = generate_regex_for_eliminations(attempt_words, letter_tracker)
+        else:
+            regex = generate_regex(attempt_words, letter_tracker)
+
+        words = tuple(word for word in self._words if re.search(regex, word))
+
+        if len(words) == 0 and use_elimination:
+            regex = generate_regex(attempt_words, letter_tracker)
+            words = tuple(word for word in self._words if re.search(regex, word))
+
+        return words
 
 
 def calc_part(count, word_count):

@@ -8,14 +8,33 @@ successful.
 
 # Benchmarks
 ```
-                        Method       Success %   Total Seconds     Avg Seconds       Avg Tries       Max Tries
-               Popular Entropy          98.267         167.209        0.072448           3.900               9
-                       Entropy          98.180         168.566        0.073035           3.997               9
-         Dominance Elimination          96.274          86.296        0.037390           4.674               9
-             Dominance (dedup)          92.288          77.227        0.033461           4.642              12
-                  Rank (dedup)          90.685          71.269        0.030879           4.708              12
-                          Rank          90.641          73.539        0.031863           4.706              12
-                     Dominance          89.905          91.129        0.039484           4.831              12
+                             Method       Success %   Total Seconds     Avg Seconds       Avg Tries       Max Tries
+    Dominance Entropy Elimination 3          99.307         150.367        0.065150           4.349               7
+         Rank Entropy Elimination 3          99.307         135.490        0.058705           4.349               7
+    Dominance Entropy Elimination 4          99.047         175.367        0.075982           4.568               8
+         Rank Entropy Elimination 4          99.047         150.105        0.065037           4.568               8
+      Popular Entropy Elimination 4          98.873         287.739        0.124670           4.336               8
+      Popular Entropy Elimination 5          98.873         289.745        0.125539           4.336               8
+      Popular Entropy Elimination 3          98.873         335.967        0.145566           4.336               8
+      Popular Entropy Elimination 2          98.787         323.918        0.140346           3.909               9
+    Dominance Entropy Elimination 2          98.354         157.135        0.068083           4.028               9
+         Rank Entropy Elimination 2          98.354         151.075        0.065457           4.028               9
+                    Popular Entropy          98.267         319.640        0.138492           3.900               9
+    Dominance Entropy Elimination 5          98.224         183.384        0.079456           4.642               8
+         Rank Entropy Elimination 5          98.224         141.402        0.061266           4.642               8
+                            Entropy          98.180         322.409        0.139692           3.997               9
+            Dominance Elimination 3          96.274         140.130        0.060715           4.674               9
+            Dominance Elimination 4          96.274         190.101        0.082366           4.674               9
+            Dominance Elimination 5          96.274         210.529        0.091217           4.674               9
+                 Rank Elimination 5          95.104         290.896        0.126038           4.766              11
+                 Rank Elimination 3          95.104         187.894        0.081410           4.766              11
+                 Rank Elimination 4          95.104         255.886        0.110869           4.766              11
+                 Rank Elimination 2          92.851         145.335        0.062970           4.576              10
+                  Dominance (dedup)          92.288         120.527        0.052221           4.642              12
+            Dominance Elimination 2          91.854         136.074        0.058958           4.672              11
+                       Rank (dedup)          90.685         115.205        0.049916           4.708              11
+                               Rank          90.641         116.372        0.050421           4.705              11
+                          Dominance          89.905         150.893        0.065378           4.831              12
 ```
 
 Note:
