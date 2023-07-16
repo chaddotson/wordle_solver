@@ -26,7 +26,7 @@ class RankEntropyEliminationSuggester(Suggester):
 
     def __init__(self, wordlist, cache_path: Path, word_frequency_map,  elimination_attempts=3, *args, **kwargs):
         self.elimination_attempts = elimination_attempts
-        self._rank_suggester = DominanceEliminationSuggester(wordlist, elimination_attempts)
+        self._rank_suggester = RankEliminationSuggester(wordlist, elimination_attempts)
         self._entropy_suggester = PopularEntropySuggester(wordlist, cache_path, word_frequency_map)
 
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
