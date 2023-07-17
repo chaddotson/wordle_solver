@@ -7,6 +7,7 @@ from wordinfo.solver import Solver, Wordle
 from wordinfo.suggesters.base import Suggester
 from wordinfo.suggesters.dominance import DominanceDedupSuggester, DominanceEliminationSuggester, DominanceSuggester
 from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester
+from wordinfo.suggesters.hybrid import DominananceEntropyEliminationSuggester
 from wordinfo.utils import (
     WordSource, get_result_representation, get_word_of_day, load_word_frequency_list, load_word_list
 )
@@ -74,6 +75,7 @@ def solve_todays_wordle():
     cache_path = Path('./cache')
     solve_with_method(EntropySuggester(words, cache_path), wordle)
     solve_with_method(PopularEntropySuggester(words, cache_path, word_frequency_map), wordle)
+    solve_with_method(DominananceEntropyEliminationSuggester(words, cache_path, word_frequency_map), wordle)
 
 
 if __name__ == '__main__':
