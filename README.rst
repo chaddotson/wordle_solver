@@ -1,4 +1,5 @@
 .. code-block::
+                             Method       Success %   Total Seconds     Avg Seconds       Avg Tries       Max Tries
     Dominance Entropy Elimination 3          99.307         159.090        0.068930           4.349               7
     Dominance Entropy Elimination 4          99.047         188.510        0.081677           4.568               8
       Popular Entropy Elimination 3          98.873         361.561        0.156656           4.336               8
