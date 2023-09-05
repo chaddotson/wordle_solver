@@ -9,7 +9,7 @@ def generate_regex_for_eliminations(bad_words, letter_tracker):
     :returns: regex string
     """
     used_letters = set(letter for word in bad_words for letter in word)
-    used_letters.update(l for l in letter_tracker.at if l is not None)
+    used_letters.update(letter for letter in letter_tracker.at if letter is not None)
     used_letters.update(letter_tracker.invalids)
     used_letters.update(letter for not_at_list in letter_tracker.not_at.values() for letter in not_at_list)
 

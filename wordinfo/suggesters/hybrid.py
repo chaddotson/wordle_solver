@@ -1,4 +1,3 @@
-from functools import cached_property
 from pathlib import Path
 
 from wordinfo.suggesters.base import Suggester

@@ -1,5 +1,4 @@
 from collections import Counter
-from functools import cached_property
 
 from wordinfo.suggesters.base import Suggester
 from wordinfo.suggesters.utils import generate_regex, generate_regex_for_eliminations, generate_suggestion_by_ranked

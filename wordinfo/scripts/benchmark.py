@@ -85,8 +85,8 @@ def run_benchmarks():
     """
     words = load_word_list(WordSource.SOLUTIONS)
     full_word_list = load_word_list(WordSource.FULL)
-
     word_frequency_map = load_word_frequency_list()
+    cache = Path('./cache')
 
     suggesters = [
         RankSuggester(full_word_list),
@@ -101,20 +101,20 @@ def run_benchmarks():
         DominanceEliminationSuggester(full_word_list, elimination_attempts=3),
         DominanceEliminationSuggester(full_word_list, elimination_attempts=4),
         DominanceEliminationSuggester(full_word_list, elimination_attempts=5),
-        EntropySuggester(full_word_list, Path('./cache')),
-        PopularEntropySuggester(full_word_list, Path('./cache'), word_frequency_map),
-        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=2),
-        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=3),
-        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=4),
-        PopularEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=5),
-        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=2),
-        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=3),
-        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=4),
-        DominananceEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=5),
-        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=2),
-        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=3),
-        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=4),
-        RankEntropyEliminationSuggester(full_word_list, Path('./cache'), word_frequency_map, elimination_attempts=5),
+        EntropySuggester(full_word_list, cache),
+        PopularEntropySuggester(full_word_list, cache, word_frequency_map),
+        PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=2),
+        PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3),
+        PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=4),
+        PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=5),
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=2),
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3),
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=4),
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=5),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=2),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=4),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=5),
     ]
 
     with ProcessPoolExecutor() as ex:
