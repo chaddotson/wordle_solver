@@ -121,7 +121,7 @@ def run_benchmarks():
         promises = [ex.submit(benchmark_method, words, suggester=suggester) for suggester in suggesters]
 
     results = [result.result() for result in as_completed(promises)]
-    results.sort(key=lambda x: x.success_percent, reverse=True)
+    results.sort(key=lambda x: (-x.success_percent, x.average_attempts, x.average_time))
 
     format_header = '{:>35} {:>15} {:>15} {:>15} {:>15} {:>15}'
     format_row = '{:>35} {:>15.3f} {:>15.3f} {:>15.6f} {:>15.3f} {:>15}'
