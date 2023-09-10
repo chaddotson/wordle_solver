@@ -61,9 +61,6 @@ popular entropy to solve it is the best with a 99.697% success rate,
 only missing 7 words in 7 tries max.
 
 ```
-Note:
-
-
                                        Method       Success %   Total Seconds     Avg Seconds       Avg Tries       Max Tries          Failed
             Dominance Entropy Elimination 3/5          99.697          49.206        0.021320           4.331               7               7
                 Popular Entropy Elimination 3          98.527         118.272        0.051244           4.388               9              34
