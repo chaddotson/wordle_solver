@@ -56,11 +56,12 @@ class PopularEntropySuggester(EntropySuggester):
     for future guesses.
     """
 
-    __pretty_name__ = 'Popular Entropy'
+    __pretty_name__ = 'Popular Entropy {cull}'
 
-    def __init__(self, wordlist, cache_path, word_frequency_map, *args, **kwargs):
+    def __init__(self, wordlist, cache_path, word_frequency_map, cull=40, *args, **kwargs):
         super().__init__(wordlist, cache_path)
         self._word_frequency_map = word_frequency_map
+        self.cull = cull
 
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
         words = self._get_viable_words(attempt_words, letter_tracker)
@@ -69,7 +70,7 @@ class PopularEntropySuggester(EntropySuggester):
             return words[0]
 
         entropy_by_word = self._get_entropy_by_word(words)
-        top_suggestions = heapq.nlargest(40, entropy_by_word, key=entropy_by_word.get)
+        top_suggestions = heapq.nlargest(self.cull, entropy_by_word, key=entropy_by_word.get)
         # print(top_suggestions)
         suggestion = sorted(top_suggestions, key=lambda w: self._word_frequency_map.get(w, 0), reverse=True)[0]
         return suggestion
