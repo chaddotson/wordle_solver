@@ -5,10 +5,6 @@ Interestingly, using letter positional dominance with the initial
 objective of eliminating letters is fast and very nearly as
 successful.
 
-***Note:
-Lots of solvers report 100% success rate. I have found those only
-use the accepted word list instead of the full word list.***
-
 
 # Benchmarks
 ```
@@ -53,7 +49,23 @@ use the accepted word list instead of the full word list.***
                                  Rank (dedup)          90.685          42.234        0.018299           4.708              11             215
                                          Rank          90.641          44.825        0.019421           4.705              11             216
                                     Dominance          89.905          63.438        0.027486           4.831              12             233
+```
 
+# Note on Benchark Performance
+
+I generated my own word frequency list based on book texts available
+on internet archive. If I used a more complete version found on
+github, the performance shifts slightly for a better success rate.
+In this scenario,the hybrid approach of dominance elimination with
+popular entropy to solve it is the best with a 99.697% success rate,
+only missing 7 words in 7 tries max.
+
+```
 Note:
-The word frequency list is incomplete based on the set of wordle words; however, the set is good enough that the
-success % is the same as a more complete list.
+
+
+                                       Method       Success %   Total Seconds     Avg Seconds       Avg Tries       Max Tries          Failed
+            Dominance Entropy Elimination 3/5          99.697          49.206        0.021320           4.331               7               7
+                Popular Entropy Elimination 3          98.527         118.272        0.051244           4.388               9              34
+
+```
