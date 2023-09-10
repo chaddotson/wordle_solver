@@ -132,7 +132,7 @@ def run_benchmarks():
         RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=5),
     ]
 
-    with ProcessPoolExecutor() as ex:
+    with ProcessPoolExecutor(max_workers=6) as ex:
         promises = [ex.submit(benchmark_method, words, suggester=suggester, fixed_suggestions=fixed_suggestions) for suggester in suggesters]  # noqa: E501
 
     results = [result.result() for result in as_completed(promises)]
