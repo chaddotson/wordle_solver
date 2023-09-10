@@ -87,6 +87,7 @@ def run_benchmarks():
     full_word_list = load_word_list(WordSource.FULL)
     word_frequency_map = load_word_frequency_list()
     cache = Path('./cache')
+    fixed_suggestions = []
 
     suggesters = [
         RankSuggester(full_word_list),
@@ -103,30 +104,44 @@ def run_benchmarks():
         DominanceEliminationSuggester(full_word_list, elimination_attempts=5),
         EntropySuggester(full_word_list, cache),
         PopularEntropySuggester(full_word_list, cache, word_frequency_map),
+        PopularEntropySuggester(full_word_list, cache, word_frequency_map, cull=5),
+        PopularEntropySuggester(full_word_list, cache, word_frequency_map, cull=10),
         PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=2),
         PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3),
         PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=4),
         PopularEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=5),
         DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=2),
         DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3),
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=3),    # noqa: E501
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=4),    # noqa: E501
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=5),    # noqa: E501
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=6),    # noqa: E501
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=10),   # noqa: E501
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=20),   # noqa: E501
+        DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=100),  # noqa: E501
         DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=4),
         DominananceEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=5),
         RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=2),
         RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=3),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=4),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=5),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=6),
+        RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=3, cull=10),
         RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=4),
         RankEntropyEliminationSuggester(full_word_list, cache, word_frequency_map, elimination_attempts=5),
     ]
 
     with ProcessPoolExecutor() as ex:
-        promises = [ex.submit(benchmark_method, words, suggester=suggester) for suggester in suggesters]
+        promises = [ex.submit(benchmark_method, words, suggester=suggester, fixed_suggestions=fixed_suggestions) for suggester in suggesters]  # noqa: E501
 
     results = [result.result() for result in as_completed(promises)]
     results.sort(key=lambda x: (-x.success_percent, x.average_attempts, x.average_time))
 
-    format_header = '{:>35} {:>15} {:>15} {:>15} {:>15} {:>15}'
-    format_row = '{:>35} {:>15.3f} {:>15.3f} {:>15.6f} {:>15.3f} {:>15}'
+    format_header = '{:>45} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}'
+    format_row = '{:>45} {:>15.3f} {:>15.3f} {:>15.6f} {:>15.3f} {:>15} {:>15}'
 
-    print(format_header.format('Method', 'Success %', 'Total Seconds', 'Avg Seconds', 'Avg Tries', 'Max Tries'))
+    print(format_header.format('Method', 'Success %', 'Total Seconds', 'Avg Seconds', 'Avg Tries', 'Max Tries', 'Failed'))  # noqa: E501
     for result in results:
         print(format_row.format(
             result.suggester.name,
@@ -134,18 +149,11 @@ def run_benchmarks():
             result.total_time,
             result.average_time,
             result.average_attempts,
-            result.max_attempts
+            result.max_attempts,
+            len(result.failed_words)
         ))
-
-# def print_results(result):
-#     print(f"""
-# Method: {result[0]}
-# Success: {result[1].success_percent:.3f}%
-# Total Time: {result[1].total_time:.3f}s / {result[1].average_time:.6f}s ea'
-# Avg Tries: {result[1].average_attempts:.3f}
-# Max Tries: {result[1].max_attempts}
-# Failed Words: {len(result[1].failed_words)} - {result[1].failed_words}
-#     """)
+        # if result.max_attempts > 6:
+        #     print(result.failed_words)
 
 
 if __name__ == '__main__':
