@@ -8,6 +8,10 @@ authors = ["Chad Dotson <1754094+chaddotson@users.noreply.github.com>"]
 python = "^3.11"
 
 requests = "^2.27.1"
+textatistic = "^0.0.1"
+nltk = "^3.8.1"
+readability-lxml = "^0.8.1"
+numpy = "^1.26.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

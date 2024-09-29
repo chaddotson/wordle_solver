@@ -16,9 +16,12 @@ class DominananceEntropyEliminationSuggester(Suggester):
         self._entropy_suggester = PopularEntropySuggester(wordlist, cache_path, word_frequency_map, cull)
 
     def get_suggestion(self, attempt, attempt_words, letter_tracker):
-        if len(attempt_words) < self.elimination_attempts:
-            return self._domination_suggester.get_suggestion(attempt, attempt_words, letter_tracker)
-        return self._entropy_suggester.get_suggestion(attempt, attempt_words, letter_tracker)
+        # if len(attempt_words) < self.elimination_attempts:
+        #     return self._domination_suggester.get_suggestion(attempt, attempt_words, letter_tracker)
+        # return self._entropy_suggester.get_suggestion(attempt, attempt_words, letter_tracker)
+        if len(attempt_words) % 2:
+            return self._entropy_suggester.get_suggestion(attempt, attempt_words, letter_tracker)
+        return self._domination_suggester.get_suggestion(attempt, attempt_words, letter_tracker)
 
 
 class RankEntropyEliminationSuggester(Suggester):

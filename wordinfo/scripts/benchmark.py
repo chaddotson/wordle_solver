@@ -9,9 +9,9 @@ from wordinfo.solver import Solver, Wordle
 from wordinfo.suggesters.base import Suggester
 from wordinfo.suggesters.hybrid import DominananceEntropyEliminationSuggester, RankEntropyEliminationSuggester
 from wordinfo.suggesters.dominance import DominanceDedupSuggester, DominanceEliminationSuggester, DominanceSuggester
-from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester, PopularEntropyEliminationSuggester
+from wordinfo.suggesters.entropy import EntropySuggester, PopularEntropySuggester, PopularEntropyEliminationSuggester  #, CommonEntropyEliminationSuggester
 from wordinfo.suggesters.rank import RankDedupSuggester, RankSuggester, RankEliminationSuggester
-from wordinfo.utils import WordSource, load_word_frequency_list, load_word_list
+from wordinfo.utils import WordSource, load_word_frequency_list, load_word_list, load_common_word_list
 
 logger = getLogger(__name__)
 
@@ -86,6 +86,10 @@ def run_benchmarks():
     words = load_word_list(WordSource.SOLUTIONS)
     full_word_list = load_word_list(WordSource.FULL)
     word_frequency_map = load_word_frequency_list()
+
+    common_word_list = load_common_word_list()
+
+
     cache = Path('./cache')
     fixed_suggestions = []
 
@@ -102,6 +106,7 @@ def run_benchmarks():
         DominanceEliminationSuggester(full_word_list, elimination_attempts=3),
         DominanceEliminationSuggester(full_word_list, elimination_attempts=4),
         DominanceEliminationSuggester(full_word_list, elimination_attempts=5),
+        # CommonEntropyEliminationSuggester(full_word_list, cache, common_word_list),
         EntropySuggester(full_word_list, cache),
         PopularEntropySuggester(full_word_list, cache, word_frequency_map),
         PopularEntropySuggester(full_word_list, cache, word_frequency_map, cull=5),
@@ -152,8 +157,8 @@ def run_benchmarks():
             result.max_attempts,
             len(result.failed_words)
         ))
-        # if result.max_attempts > 6:
-        #     print(result.failed_words)
+        if result.max_attempts > 6:
+            print(result.failed_words)
 
 
 if __name__ == '__main__':

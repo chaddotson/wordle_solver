@@ -1,9 +1,9 @@
-import re
+from csv import reader
 from datetime import date
 from enum import Enum
 from json import load
 from pathlib import Path
-
+import re
 import requests
 
 DATA_PATH = Path(__file__).parent / 'data'
@@ -23,6 +23,12 @@ def load_word_list(wordset=WordSource.FULL):
 def load_word_frequency_list():
     with open(DATA_PATH / 'word_frequency.json', 'r') as f:
         return load(f)
+
+
+def load_common_word_list():
+    with open(DATA_PATH / 'common.csv', 'r') as f:
+       return {l[0]: True if l[1]==1 else False for l in reader(f)}
+
 
 
 def get_word_of_day():

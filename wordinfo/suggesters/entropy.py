@@ -99,6 +99,71 @@ class PopularEntropyEliminationSuggester(PopularEntropySuggester):
         return words
 
 
+class CommonEntropySuggester(EntropySuggester):
+    __pretty_name__ = 'Common Entropy Elimination ' # {elimination_attempts}
+
+    def __init__(self, wordlist, cache_path, common_word_map, cull=40, *args, **kwargs):
+        super().__init__(wordlist, cache_path)
+        self._common_word_map = common_word_map
+        self.cull = cull
+
+    def get_suggestion(self, attempt, attempt_words, letter_tracker):
+        words = self._get_viable_words(attempt_words, letter_tracker)
+
+        if len(words) == 1:
+            return words[0]
+
+        entropy_by_word = self._get_entropy_by_word(words)
+        top_suggestions = heapq.nlargest(self.cull, entropy_by_word, key=entropy_by_word.get)
+        # print(top_suggestions)
+        suggestion = sorted(top_suggestions, key=lambda w: self._common_word_map.get(w, False), reverse=True)[0]
+        return suggestion
+
+
+
+# class CommonEntropyEliminationSuggester(PopularEntropyEliminationSuggester):
+#     __pretty_name__ = 'Common Entropy Elimination ' # {elimination_attempts}
+#
+#
+#     def __init__(self, wordlist, cache_path, word_frequency_map, elimination_attempts=3, cull=40,  *args, **kwargs):
+#         super().__init__(wordlist, cache_path, word_frequency_map)
+#         self.elimination_attempts = elimination_attempts
+#
+#     def __init__(self, wordlist, cache_path, common_word_map, cull=40, *args, **kwargs):
+#         super().__init__(wordlist, cache_path)
+#         self._common_word_map = common_word_map
+#         self.cull = cull
+#
+#     def get_suggestion(self, attempt, attempt_words, letter_tracker):
+#         words = self._get_viable_words(attempt_words, letter_tracker)
+#
+#         if len(words) == 1:
+#             return words[0]
+#
+#         entropy_by_word = self._get_entropy_by_word(words)
+#         top_suggestions = heapq.nlargest(self.cull, entropy_by_word, key=entropy_by_word.get)
+#         # print(top_suggestions)
+#         suggestion = sorted(top_suggestions, key=lambda w: self._common_word_map.get(w, False), reverse=True)[0]
+#         return suggestion
+
+
+
+    def _get_viable_words(self, attempt_words, letter_tracker):
+        use_elimination = len(attempt_words) < self.elimination_attempts
+        if use_elimination:
+            regex = generate_regex_for_eliminations(attempt_words, letter_tracker)
+        else:
+            regex = generate_regex(attempt_words, letter_tracker)
+
+        words = tuple(word for word in self._words if re.search(regex, word))
+
+        if len(words) == 0 and use_elimination:
+            regex = generate_regex(attempt_words, letter_tracker)
+            words = tuple(word for word in self._words if re.search(regex, word))
+
+        return words
+
+
 def calc_part(count, word_count):
     probability = count / word_count
     return probability * log2(1 / probability)
